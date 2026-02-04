@@ -4,22 +4,35 @@ import User from "../models/User.js";
 export const protect = async (req, res, next) => {
   let token;
 
-  // Check for token in headers
   if (
     req.headers.authorization &&
     req.headers.authorization.startsWith("Bearer")
   ) {
     try {
-      token = req.headers.authorization.split(" ")[1]; // Get token
+      token = req.headers.authorization.split(" ")[1];
+
+      // decode token
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-      // Attach user to request
-      req.user = await User.findById(decoded.id).select("-password");
-      next();
+      // find user
+      const user = await User.findById(decoded.id).select("-password");
+      if (!user) {
+        return res.status(401).json({ message: "User no longer exists" });
+      }
+
+      req.user = user;
+      return next();
+
     } catch (error) {
-      res.status(401).json({ message: "Not authorized, token failed" });
+      return res.status(401).json({ message: "Invalid or expired token" });
     }
-  } else {
-    res.status(401).json({ message: "No token, authorization denied" });
   }
+
+  return res.status(401).json({ message: "Authorization denied, no token" });
+};
+
+
+export const admin = (req, res, next) => {
+  if (req.user && req.user.role === "admin") return next();
+  return res.status(403).json({ message: "Admin access required" });
 };

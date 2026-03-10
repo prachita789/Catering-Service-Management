@@ -7,10 +7,11 @@ const orderSchema = new mongoose.Schema(
     menuItems: [{ type: mongoose.Schema.Types.ObjectId, ref: "Menu" }],
     totalPrice: { type: Number, required: true },
     status: {
-      type: String,
-      enum: ["Pending", "Preparing", "Delivered", "Cancelled"],
-      default: "Pending",
-    },
+  type: String,
+  enum: ["pending", "preparing", "delivered", "cancelled"],
+  default: "pending",
+}
+,
   },
   { timestamps: true }
 );

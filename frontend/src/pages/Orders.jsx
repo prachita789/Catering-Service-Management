@@ -1,29 +1,16 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../api/axios";
 import toast from "react-hot-toast";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
 import { Clock, Truck, CheckCircle, XCircle, Utensils } from "lucide-react";
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-  const token = userInfo?.token;
-
   useEffect(() => {
-    if (!token) {
-      toast.error("Please login first to view your orders.");
-      setTimeout(() => (window.location.href = "/login"), 2000);
-      return;
-    }
-
     const fetchOrders = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/orders", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await api.get("/orders");
         setOrders(res.data);
       } catch (err) {
         console.error(err);
@@ -34,7 +21,7 @@ const Orders = () => {
     };
 
     fetchOrders();
-  }, [token]);
+  }, []);
 
   const statusBadge = (status) => {
     switch (status) {
@@ -53,7 +40,6 @@ const Orders = () => {
 
   return (
     <>
-      <Navbar />
 
       {/* HERO */}
       <section

@@ -2,8 +2,15 @@ import mongoose from "mongoose";
 
 const bookingSchema = new mongoose.Schema(
   {
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+
+    },
+
     fullName: { type: String, required: true },
-    email: { type: String, required: true },
+    
 
     eventType: {
       type: String,
@@ -16,10 +23,10 @@ const bookingSchema = new mongoose.Schema(
     // Optional: store client's timezone like "Asia/Kolkata"
     timezone: { type: String, default: "UTC" },
 
-    // Simple venue name (banquet, hall, etc.)
+    
     venue: { type: String, required: true },
 
-    // NEW: structured address (optional but useful)
+    
     address: {
       fullAddress: { type: String },
       city: { type: String },
@@ -28,11 +35,11 @@ const bookingSchema = new mongoose.Schema(
       country: { type: String, default: "India" },
     },
 
-    // NEW: GeoJSON for map / distance (optional)
+    
     location: {
       type: { type: String, enum: ["Point"], default: "Point" },
       coordinates: {
-        type: [Number], // [lng, lat]
+        type: [Number], 
         default: [0, 0],
       },
     },
@@ -59,8 +66,7 @@ const bookingSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// // for location queries (optional)
-// bookingSchema.index({ location: "2dsphere" });
+
 
 const Booking = mongoose.model("Booking", bookingSchema);
 export default Booking;

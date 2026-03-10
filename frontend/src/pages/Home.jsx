@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import heroImg from "../assets/hero-food.jpg"; 
+const heroImg = "https://images.unsplash.com/photo-1555244162-803834f70033?auto=format&fit=crop&w=1600&q=80";
 import paneerImg from "../assets/menu/paneer-butter-masala.jpg";
 import biryaniImg from "../assets/menu/biryani.jpg";
 import lavaCakeImg from "../assets/menu/chocolate-lava-cake.jpg";

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../api/axios";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { CalendarDays, MapPin, Users, ClipboardList } from "lucide-react";
@@ -9,7 +9,6 @@ const BookingForm = () => {
   const [menus, setMenus] = useState([]);
   const [form, setForm] = useState({
     fullName: "",
-    email: "",
     eventType: "",
     eventDate: "",
     venue: "",
@@ -21,8 +20,8 @@ const BookingForm = () => {
 
   // 🥘 Fetch Menus for selection
   useEffect(() => {
-    axios
-      .get("http://localhost:5000/api/menus")
+    api
+      .get("/menus")
       .then((res) => setMenus(res.data))
       .catch((err) => console.error("Error fetching menus:", err));
   }, []);
@@ -30,7 +29,11 @@ const BookingForm = () => {
   // Handle input change
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    setForm((prev) => ({
+  ...prev,
+  [name]: name === "guests" ? Number(value) : value,
+}));
+
   };
 
   // Handle menu checkbox selection
@@ -50,21 +53,13 @@ const handleSubmit = async (e) => {
   setLoading(true);
 
   try {
-    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-
-    if (!userInfo) {
-      toast.error("Please login to book your event first!");
-      setTimeout(() => navigate("/login", { state: { from: "/booking" } }), 2000);
+    if (form.menuIds.length === 0) {
+      toast.error("Please select at least one menu item");
       setLoading(false);
       return;
     }
 
-    // ✅ Include user email and token in request
-    const config = {
-      headers: { Authorization: `Bearer ${userInfo.token}` },
-    };
-
-    const { data } = await axios.post("http://localhost:5000/api/bookings", form, config);
+    const { data } = await api.post("/bookings", form);
 
     toast.success("🎉 Booking confirmed! Your order has been created.", {
       duration: 3000,
@@ -73,7 +68,7 @@ const handleSubmit = async (e) => {
     // ✅ Reset form after success
     setForm({
       fullName: "",
-      email: "",
+      eventType: "",
       eventDate: "",
       venue: "",
       guests: "",
@@ -84,7 +79,8 @@ const handleSubmit = async (e) => {
     // ✅ Redirect to Orders page
     setTimeout(() => navigate("/orders"), 2500);
   } catch (err) {
-    console.error(err);
+    console.error("Backend error:", err.response?.data);
+
     toast.error(err.response?.data?.message || "Something went wrong. Please try again.");
   } finally {
     setLoading(false);
@@ -131,19 +127,7 @@ const handleSubmit = async (e) => {
             />
           </div>
 
-          {/* Email */}
-          <div>
-            <label className="block font-medium mb-2">Email Address</label>
-            <input
-              type="email"
-              name="email"
-              value={form.email}
-              onChange={handleChange}
-              placeholder="you@example.com"
-              required
-              className="w-full border border-gray-300 px-4 py-3 rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-none"
-            />
-          </div>
+          
 
           {/* Event Type */}
           <div>

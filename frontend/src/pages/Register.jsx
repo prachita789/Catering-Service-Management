@@ -178,34 +178,6 @@ export default function Register() {
                 Create Account
               </button>
 
-              {/* Social Buttons */}
-              <div className="mt-6 text-center text-sm text-gray-600">
-                or register with
-              </div>
-              <div className="mt-3 flex gap-3">
-                <button
-                  type="button"
-                  className="flex-1 py-2 border border-gray-300 rounded-xl bg-white hover:bg-gray-100 flex items-center justify-center gap-2 text-gray-700"
-                >
-                  <img
-                    src="https://www.svgrepo.com/show/475656/google-color.svg"
-                    alt="Google"
-                    className="w-5 h-5"
-                  />
-                  Google
-                </button>
-                <button
-                  type="button"
-                  className="flex-1 py-2 border border-gray-300 rounded-xl bg-white hover:bg-gray-100 flex items-center justify-center gap-2 text-gray-700"
-                >
-                  <img
-                    src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg"
-                    alt="Apple"
-                    className="w-5 h-5"
-                  />
-                  Apple
-                </button>
-              </div>
             </form>
 
             {/* Link to Login */}

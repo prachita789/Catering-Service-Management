@@ -1,0 +1,26 @@
+{
+  "name": "cateringapp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+      "dev": "concurrently \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\""
+    
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/prachita789/Catering-Service-Management.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/prachita789/Catering-Service-Management/issues"
+  },
+  "homepage": "https://github.com/prachita789/Catering-Service-Management#readme",
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+  
+}

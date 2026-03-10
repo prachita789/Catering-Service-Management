@@ -1,8 +1,6 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import React, { useEffect, useState, useCallback } from "react";
+import api from "../api/axios";
 import toast from "react-hot-toast";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
 import {
   CalendarDays,
   MapPin,
@@ -16,15 +14,10 @@ const MyBookings = () => {
   const [loading, setLoading] = useState(true);
   const [selectedBooking, setSelectedBooking] = useState(null);
 
-  const user = JSON.parse(localStorage.getItem("userInfo"));
-  const token = user?.token;
-
   // Fetch bookings
-  const fetchBookings = async () => {
+  const fetchBookings = useCallback(async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/bookings", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await api.get("/bookings");
       setBookings(res.data);
     } catch (err) {
       console.error(err);
@@ -32,38 +25,28 @@ const MyBookings = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
-    if (!token) {
-      toast.error("Please login to view your bookings.");
-      return;
-    }
     fetchBookings();
-  }, [token]);
+  }, [fetchBookings]);
 
   // Cancel Booking
   const handleCancel = async (id) => {
     if (!window.confirm("Are you sure you want to cancel this booking?")) return;
 
     try {
-      await axios.patch(
-        `http://localhost:5000/api/bookings/${id}`,
-        { status: "Cancelled" },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
+      await api.delete(`/bookings/${id}`);
       toast.success("Booking cancelled successfully.");
       fetchBookings();
     } catch (err) {
-      console.error(err);
-      toast.error("Failed to cancel booking.");
+      console.error(err.response?.data || err);
+      toast.error(err.response?.data?.message || "Failed to cancel booking.");
     }
   };
 
   return (
     <>
-      <Navbar />
 
       {/* Hero Section */}
       <section
@@ -111,12 +94,14 @@ const MyBookings = () => {
                     </h2>
                     <span
                       className={`px-3 py-1 rounded-full text-sm capitalize ${
-                        b.status === "Pending"
+                        b.status === "pending"
                           ? "bg-yellow-100 text-yellow-700"
-                          : b.status === "Confirmed"
+                          : b.status === "confirmed"
                           ? "bg-green-100 text-green-700"
-                          : b.status === "Cancelled"
+                          : b.status === "cancelled"
                           ? "bg-red-100 text-red-700"
+                          : b.status === "completed"
+                          ? "bg-blue-100 text-blue-700"
                           : "bg-gray-200 text-gray-700"
                       }`}
                     >
@@ -153,7 +138,7 @@ const MyBookings = () => {
                     >
                       <Eye className="w-4 h-4" /> View Details
                     </button>
-                    {b.status !== "Cancelled" && (
+                    {b.status !== "cancelled" && (
                       <button
                         onClick={() => handleCancel(b._id)}
                         className="flex-1 py-2 rounded-lg bg-red-600 text-white font-medium hover:bg-red-700 transition flex items-center justify-center gap-2 cursor-pointer"
